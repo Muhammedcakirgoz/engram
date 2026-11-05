@@ -76,4 +76,47 @@ class StudySessionStateTest {
         assertEquals(10.minutes, s.intervals?.get(Rating.Good))
         assertEquals(8.days, s.intervals?.get(Rating.Easy))
     }
+
+    @Test
+    fun itemsThatLoadLaterJoinTheQueue() {
+        val s = session(emptyList())
+        assertTrue(s.isFinished)
+        s.updateItems(listOf(Item("a", Card.new("a", t0)), Item("b", Card.new("b", t0))))
+        assertEquals(2, s.remaining)
+        assertEquals("a", s.current?.name)
+    }
+
+    @Test
+    fun staleListDoesNotUndoAnAnswer() {
+        val original = listOf(Item("a", Card.new("a", t0)), Item("b", Card.new("b", t0)))
+        val s = session(original)
+        s.rate(Rating.Again) // a -> 1m step, requeued
+        // The database has not saved yet and emits the old list again.
+        s.updateItems(original)
+        s.rate(Rating.Good) // b
+        val a = s.current!!
+        assertEquals("a", a.name)
+        assertEquals(1, a.card.reps, "the session must keep the answered card, not the stale one")
+        assertEquals(0, a.card.step)
+    }
+
+    @Test
+    fun updatedContentIsShownAndDeletedItemsLeave() {
+        val s = session(listOf(Item("a", Card.new("a", t0)), Item("b", Card.new("b", t0)), Item("c", Card.new("c", t0))))
+        s.updateItems(listOf(Item("a2", Card.new("a", t0)), Item("c", Card.new("c", t0))))
+        assertEquals(2, s.remaining)
+        assertEquals("a2", s.current?.name)
+        s.rate(Rating.Easy)
+        assertEquals("c", s.current?.name)
+    }
+
+    @Test
+    fun answeredCardsAreNotQueuedAgainByAnUpdate() {
+        val s = session(listOf(Item("a", Card.new("a", t0)), Item("b", Card.new("b", t0))))
+        s.rate(Rating.Easy) // a graduates and leaves
+        // Even if the list still shows "a" as due, it must not come back.
+        s.updateItems(listOf(Item("a", Card.new("a", t0)), Item("b", Card.new("b", t0))))
+        assertEquals(1, s.remaining)
+        assertEquals(0.5f, s.progress)
+    }
 }

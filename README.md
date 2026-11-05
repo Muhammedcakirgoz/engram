@@ -22,13 +22,20 @@
 | Desktop (JVM) | ✅ | ✅ |
 | Web (Wasm / JS) | ✅ | ✅ |
 
+## Installation
+
+> Engram is not on Maven Central yet. The first release is on its way. ⭐ Star or watch the repo to get notified.
+> Until then you can try it by cloning the repo and running the sample.
+
 ## Quick start
 
 ```kotlin
 data class Word(val english: String, val turkish: String, val card: Card)
 
 @Composable
-fun StudyScreen(words: List<Word>, repository: WordRepository) {
+fun StudyScreen(repository: WordRepository) {
+    val words by repository.words.collectAsState(initial = emptyList()) // e.g. a Room Flow
+
     val session = rememberStudySessionState(
         items = words,
         cardOf = { it.card },
@@ -46,6 +53,12 @@ fun StudyScreen(words: List<Word>, repository: WordRepository) {
 ```
 
 New items start with `Card.new(id = "apple", now = Clock.System.now())`.
+
+**Works with live data.** `items` can change at any time, for example when it loads from a database or when each review is saved back to it. The session keeps its place: it matches items by `Card.id`, adds new due cards, drops deleted ones and shows updated content. Answers given in the session are never undone by a list that hasn't caught up yet. To start over on purpose (for example when switching decks), pass a `key`:
+
+```kotlin
+rememberStudySessionState(items = words, /* … */, key = deckId)
+```
 
 ## Use only the scheduler
 
