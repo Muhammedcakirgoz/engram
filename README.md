@@ -24,8 +24,21 @@
 
 ## Installation
 
-> Engram is not on Maven Central yet. The first release is on its way. ⭐ Star or watch the repo to get notified.
-> Until then you can try it by cloning the repo and running the sample.
+Engram is on Maven Central. Add it to your `commonMain` dependencies:
+
+```kotlin
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.github.muhammedcakirgoz:engram-compose:0.1.0") // UI + scheduler
+            // or only the scheduler, without Compose:
+            // implementation("io.github.muhammedcakirgoz:engram-core:0.1.0")
+        }
+    }
+}
+```
+
+Android apps need `compileSdk = 37` or newer (required by Compose Multiplatform 1.12).
 
 ## Quick start
 
@@ -99,7 +112,7 @@ This scheduler is a port of [py-fsrs](https://github.com/open-spaced-repetition/
 
 ## Roadmap
 
-- [ ] Maven Central release
+- [x] Maven Central release
 - [ ] Android and iOS sample apps
 - [ ] Statistics helpers (forecast, retention, heatmap)
 - [ ] Type-in-the-answer and multiple-choice cards

@@ -3,7 +3,8 @@ kotlin = "2.4.21"
 agp = "9.3.2"
 compose = "1.12.2"
 composeMaterial3 = "1.9.0"
-androidCompileSdk = "36"
+mavenPublish = "0.37.0"
+androidCompileSdk = "37"
 androidMinSdk = "24"
 
 [libraries]
@@ -18,3 +19,4 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose" }
 android-kmp-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
